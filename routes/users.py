@@ -18,8 +18,8 @@ manager = LoginManager(secret=secret, token_url='/user/login', use_cookie=True)
 manager.cookie_name = cookie
 
 @manager.user_loader()
-def load_user(email : EmailStr):
-    user = User.find_one(User.email == email)
+async def load_user(email : EmailStr):
+    user = await User.find_one(User.email == email)
     return user
 
 
@@ -52,7 +52,13 @@ async def login(credential: OAuth2PasswordRequestForm = Depends()):
     username = credential.username
     password = credential.password
 
-    print(username, password)
+    user = await load_user(username)
 
+    '''
+    if not user:
+        raise InvalidCredentialsException
+    elif password != user["password"]:
+        raise InvalidCredentialsException
+    '''
 
-
+    print(user)
